@@ -19,15 +19,15 @@ func NewUserController(userService service.UserService) UserController {
 }
 
 func (controller *UserControllerImpl) SignUp(c *fiber.Ctx) error {
-	AuthRequest := request.AuthRequest{}
+	signUpRequest := request.SignUpRequest{}
 
-	err := c.BodyParser(&AuthRequest)
+	err := c.BodyParser(&signUpRequest)
 
 	if err != nil {
 		return err
 	}
 
-	userResponse, err := controller.UserService.SignUp(AuthRequest)
+	userResponse, err := controller.UserService.SignUp(signUpRequest)
 
 	if err != nil {
 		return err
@@ -44,15 +44,15 @@ func (controller *UserControllerImpl) SignUp(c *fiber.Ctx) error {
 }
 
 func (controller *UserControllerImpl) SignIn(c *fiber.Ctx) error {
-	AuthRequest := request.AuthRequest{}
+	signInRequest := request.SignInRequest{}
 
-	err := c.BodyParser(&AuthRequest)
+	err := c.BodyParser(&signInRequest)
 
 	if err != nil {
 		return err
 	}
 
-	signInResponse, err := controller.UserService.SignIn(AuthRequest)
+	signInResponse, err := controller.UserService.SignIn(signInRequest)
 
 	if err != nil {
 		return err
@@ -73,10 +73,10 @@ func (controller *UserControllerImpl) SignIn(c *fiber.Ctx) error {
 	return c.Status(200).JSON(response)
 }
 
-func (controller *UserControllerImpl) FindUserById(c *fiber.Ctx) error {
+func (controller *UserControllerImpl) GetUserById(c *fiber.Ctx) error {
 	userId := c.Params("userId")
 
-	userResponse, err := controller.UserService.FindUserById(userId)
+	userResponse, err := controller.UserService.GetUserById(userId)
 
 	if err != nil {
 		return err

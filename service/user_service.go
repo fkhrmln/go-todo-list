@@ -6,7 +6,7 @@ import (
 )
 
 type UserService interface {
-	SignUp(user request.AuthRequest) (response.UserResponse, error)
-	SignIn(user request.AuthRequest) (response.SignInResponse, error)
-	FindUserById(userId string) (response.UserResponse, error)
+	SignUp(user request.SignUpRequest) (response.UserResponse, error)
+	SignIn(user request.SignInRequest) (response.SignInResponse, error)
+	GetUserById(userId string) (response.UserResponse, error)
 }

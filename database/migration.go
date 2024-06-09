@@ -5,5 +5,5 @@ import "go-todo-list/entity"
 func Migration() {
 	db := GetConnection()
 
-	db.Migrator().AutoMigrate(&entity.User{})
+	db.Migrator().AutoMigrate(&entity.User{}, &entity.Todo{})
 }

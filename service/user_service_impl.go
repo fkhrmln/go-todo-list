@@ -27,51 +27,56 @@ func NewUserService(userRepository repository.UserRepository, db *gorm.DB, valid
 	}
 }
 
-func (service *UserServiceImpl) SignUp(authRequest request.AuthRequest) (response.UserResponse, error) {
-	err := service.Validator.Struct(authRequest)
+func (service *UserServiceImpl) SignUp(signUpRequest request.SignUpRequest) (response.UserResponse, error) {
+	err := service.Validator.Struct(signUpRequest)
 
 	if err != nil {
 		return response.UserResponse{}, &exception.ValidationError{Message: err.Error()}
 	}
 
-	user, _ := service.UserRepository.FindByUsername(service.DB, authRequest.Username)
+	_, err = service.UserRepository.FindByEmail(service.DB, signUpRequest.Email)
 
-	if user.ID != "" {
-		return response.UserResponse{}, &exception.BadRequestError{Message: "Username Already Taken"}
+	if err == nil {
+		return response.UserResponse{}, &exception.BadRequestError{Message: "Email Already Taken"}
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(authRequest.Password), 14)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(signUpRequest.Password), 14)
 
 	if err != nil {
 		return response.UserResponse{}, err
 	}
 
-	user = entity.User{
-		Username: authRequest.Username,
+	user := entity.User{
+		Email:    signUpRequest.Email,
 		Password: string(hashedPassword),
+		Username: signUpRequest.Username,
 	}
 
-	user = service.UserRepository.Create(service.DB, user)
+	user, err = service.UserRepository.Create(service.DB, user)
+
+	if err != nil {
+		return response.UserResponse{}, err
+	}
 
 	userResponse := helper.UserToUserResponse(user)
 
 	return userResponse, nil
 }
 
-func (service *UserServiceImpl) SignIn(authRequest request.AuthRequest) (response.SignInResponse, error) {
-	err := service.Validator.Struct(authRequest)
+func (service *UserServiceImpl) SignIn(signInRequest request.SignInRequest) (response.SignInResponse, error) {
+	err := service.Validator.Struct(signInRequest)
 
 	if err != nil {
 		return response.SignInResponse{}, &exception.ValidationError{Message: err.Error()}
 	}
 
-	user, _ := service.UserRepository.FindByUsername(service.DB, authRequest.Username)
+	user, err := service.UserRepository.FindByEmail(service.DB, signInRequest.Email)
 
-	if user.ID == "" {
+	if err != nil {
 		return response.SignInResponse{}, &exception.BadRequestError{Message: "User Not Registered"}
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(authRequest.Password))
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(signInRequest.Password))
 
 	if err != nil {
 		return response.SignInResponse{}, &exception.BadRequestError{Message: "Wrong Password"}
@@ -81,6 +86,7 @@ func (service *UserServiceImpl) SignIn(authRequest request.AuthRequest) (respons
 
 	signInResponse := response.SignInResponse{
 		ID:       user.ID,
+		Email:    user.Email,
 		Username: user.Username,
 		Token:    token,
 	}
@@ -88,7 +94,7 @@ func (service *UserServiceImpl) SignIn(authRequest request.AuthRequest) (respons
 	return signInResponse, nil
 }
 
-func (service *UserServiceImpl) FindUserById(userId string) (response.UserResponse, error) {
+func (service *UserServiceImpl) GetUserById(userId string) (response.UserResponse, error) {
 	user, err := service.UserRepository.FindById(service.DB, userId)
 
 	if err != nil {

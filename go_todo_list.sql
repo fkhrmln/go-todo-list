@@ -5,3 +5,13 @@ DESC users;
 SELECT * FROM users;
 
 DELETE FROM users;
+
+DROP TABLE users;
+
+DESC todos;
+
+SELECT * FROM todos;
+
+DELETE FROM todos;
+
+DROP TABLE todos;

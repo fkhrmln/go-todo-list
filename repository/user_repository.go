@@ -7,7 +7,7 @@ import (
 )
 
 type UserRepository interface {
-	Create(db *gorm.DB, user entity.User) entity.User
+	Create(db *gorm.DB, user entity.User) (entity.User, error)
 	FindById(db *gorm.DB, userId string) (entity.User, error)
-	FindByUsername(db *gorm.DB, username string) (entity.User, error)
+	FindByEmail(db *gorm.DB, email string) (entity.User, error)
 }

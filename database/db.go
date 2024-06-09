@@ -16,7 +16,7 @@ func GetConnection() *gorm.DB {
 	user := os.Getenv("DB_USER")
 	password := os.Getenv("DB_PASSWORD")
 
-	dialect := mysql.Open(fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", user, password, host, port, name))
+	dialect := mysql.Open(fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true&loc=Asia%%2FJakarta", user, password, host, port, name))
 
 	db, err := gorm.Open(dialect, &gorm.Config{
 		Logger:      logger.Default.LogMode(logger.Info),

@@ -27,19 +27,27 @@ func main() {
 
 	validator := validator.New()
 
+	app := app.NewApp()
+
 	userRepository := repository.NewUserRepository()
 
 	userService := service.NewUserService(userRepository, db, validator)
 
 	userController := controller.NewUserController(userService)
 
-	app := app.NewApp()
+	todoRepository := repository.NewTodoRepository()
+
+	todoService := service.NewTodoService(todoRepository, db, validator)
+
+	todoController := controller.NewTodoController(todoService)
 
 	apiRouter := app.Group("/api/v1")
 
 	router.AuthRouter(apiRouter, userController)
 
 	router.UserRouter(apiRouter, userController)
+
+	router.TodoRouter(apiRouter, todoController)
 
 	err = app.Listen(fmt.Sprintf("%s:%s", os.Getenv("APP_HOST"), os.Getenv("APP_PORT")))
 

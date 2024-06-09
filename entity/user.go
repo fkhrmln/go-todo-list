@@ -9,8 +9,10 @@ import (
 
 type User struct {
 	ID        string    `gorm:"column:id;type:uuid;primaryKey"`
-	Username  string    `gorm:"column:username;type:varchar(50);not null;unique"`
+	Email     string    `gorm:"column:email;type:varchar(100);unique;not null"`
 	Password  string    `gorm:"column:password;type:varchar(100);not null"`
+	Username  string    `gorm:"column:username;type:varchar(50);not null"`
+	Todos     []Todo    `gorm:"foreignKey:user_id;references:id"`
 	CreatedAt time.Time `gorm:"column:created_at;autoCreateTime"`
 	UpdatedAt time.Time `gorm:"column:updated_at;autoCreateTime;autoUpdateTime"`
 }

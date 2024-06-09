@@ -13,14 +13,14 @@ func NewUserRepository() UserRepository {
 	return &UserRepositoryImpl{}
 }
 
-func (repository *UserRepositoryImpl) Create(db *gorm.DB, user entity.User) entity.User {
+func (repository *UserRepositoryImpl) Create(db *gorm.DB, user entity.User) (entity.User, error) {
 	err := db.Create(&user).Error
 
 	if err != nil {
-		panic(err)
+		return entity.User{}, err
 	}
 
-	return user
+	return user, nil
 }
 
 func (repository *UserRepositoryImpl) FindById(db *gorm.DB, userId string) (entity.User, error) {
@@ -35,10 +35,10 @@ func (repository *UserRepositoryImpl) FindById(db *gorm.DB, userId string) (enti
 	return user, nil
 }
 
-func (repository *UserRepositoryImpl) FindByUsername(db *gorm.DB, username string) (entity.User, error) {
+func (repository *UserRepositoryImpl) FindByEmail(db *gorm.DB, email string) (entity.User, error) {
 	user := entity.User{}
 
-	err := db.Where("username = ?", username).Take(&user).Error
+	err := db.Where("email = ?", email).Take(&user).Error
 
 	if err != nil {
 		return entity.User{}, err

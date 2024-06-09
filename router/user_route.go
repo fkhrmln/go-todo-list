@@ -10,5 +10,5 @@ import (
 func UserRouter(apiRouter fiber.Router, controller controller.UserController) {
 	authRouter := apiRouter.Group("/users")
 
-	authRouter.Get("/:userId", middleware.VerifyToken(), controller.FindUserById)
+	authRouter.Get("/:userId", middleware.VerifyToken(), controller.GetUserById)
 }
